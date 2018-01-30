@@ -1,10 +1,11 @@
+#!/usr/bin/python3
 import psycopg2
 
 DBNAME = "news"
 
 
 def create_errors_view():
-    """Create views for error report"""
+    """Create view for error report that totals the errors by date"""
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
@@ -16,7 +17,7 @@ def create_errors_view():
 
 
 def create_requests_view():
-    """Create views for error report"""
+    """Create view for error report that totals the requests by date"""
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
