@@ -8,7 +8,9 @@ def create_errors_view():
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
-        "create view errors_by_date as select date(time) as view_date, count(status) as error_total from log where status = '404 NOT FOUND' group by view_date")
+        "create view errors_by_date as select date(time) as view_date, "
+        "count(status) as error_total from log where status = '404 NOT FOUND' "
+        "group by view_date")
     db.commit()
     db.close()
 
@@ -18,7 +20,8 @@ def create_requests_view():
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
-        "create view requests_by_date as select date(time) as view_date, count(status) as total from log group by view_date")
+        "create view requests_by_date as select date(time) as view_date, "
+        "count(status) as total from log group by view_date")
     db.commit()
     db.close()
 
@@ -28,7 +31,10 @@ def get_top_three_articles():
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
-        "select articles.title, count(log.path) as total_views from articles, log where articles.slug = substring(log.path, '[^\/]+$') group by articles.title order by total_views desc limit 3")
+        "select articles.title, count(log.path) as total_views "
+        "from articles, log where articles.slug = "
+        "substring(log.path, '[^\/]+$') group by articles.title "
+        "order by total_views desc limit 3")
     top_articles = c.fetchall()
     db.close()
     return top_articles
@@ -39,7 +45,10 @@ def get_top_authors():
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
-        "select authors.name, count(log.path) as total_pageviews from authors, articles, log where authors.id = articles.author and articles.slug = substring(log.path, '[^\/]+$') group by authors.name order by total_pageviews desc")
+        "select authors.name, count(log.path) as total_pageviews "
+        "from authors, articles, log where authors.id = articles.author "
+        "and articles.slug = substring(log.path, '[^\/]+$') "
+        "group by authors.name order by total_pageviews desc")
     top_authors = c.fetchall()
     db.close()
     return top_authors
@@ -50,7 +59,13 @@ def get_top_error_days():
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(
-        "select requests_by_date.view_date, round(cast(errors_by_date.error_total as decimal) / requests_by_date.total * 100, 3) as percent_error from requests_by_date, errors_by_date where requests_by_date.view_date = errors_by_date.view_date and round(cast(errors_by_date.error_total as decimal) / requests_by_date.total * 100, 3) > 1")
+        "select requests_by_date.view_date, "
+        "round(cast(errors_by_date.error_total as decimal) / "
+        "requests_by_date.total * 100, 3) as percent_error "
+        "from requests_by_date, errors_by_date "
+        "where requests_by_date.view_date = errors_by_date.view_date "
+        "and round(cast(errors_by_date.error_total as decimal) / "
+        "requests_by_date.total * 100, 3) > 1")
     error_days = c.fetchall()
     db.close()
     return error_days
@@ -78,5 +93,6 @@ print("")
 print("Days where more than 1% of requests led to errors:")
 days = get_top_error_days()
 for day in days:
-    print("    " + day[0].strftime("%B %d, %Y") + " - " + str(day[1]) + " errors")
+    print("    " + day[0].strftime("%B %d, %Y") + " - " +
+          str(day[1]) + " errors")
 print("")
